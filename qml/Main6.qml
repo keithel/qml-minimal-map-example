@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
 import QtQuick
+import QtQuick.Controls
 import QtLocation
 import QtPositioning
 
-Window {
+ApplicationWindow {
     width: Qt.platform.os == "android" ? Screen.width : 512
     height: Qt.platform.os == "android" ? Screen.height : 512
     visible: true
