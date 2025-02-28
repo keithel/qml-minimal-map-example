@@ -22,7 +22,7 @@ ApplicationWindow {
         name: "osm"
         PluginParameter {
             name: "osm.mapping.providersrepository.address"
-            value: "http://localhost:8080/"
+            value: AppConfig.osmMappingProvidersRepositoryAddress
         }
     }
 
