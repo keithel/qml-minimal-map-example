@@ -10,9 +10,11 @@
 
 #include "appconfig.h"
 
-QJsonObject createOsmJson(QString apiKey, QString mapType) {
+std::map<QString, QString> s_osmToThunderforestMapNames = { {"street", "atlas"}, {"satellite", ""}, { "cycle", "cycle" }, {"transit", "transport"}, {"night-transit", "transport-dark"}, {"terrain", "outdoors"}, {"hiking", "outdoors"} };
+
+QJsonObject createOsmJson(const QString &apiKey, const QString &mapType) {
     QJsonObject json;
-    json["UrlTemplate"] = QString("https://a.tile.thunderforest.com/%2/%z/%x/%y.png?apikey=%1").arg(apiKey).arg(mapType);
+    json["UrlTemplate"] = QString("https://tile.thunderforest.com/%2/%z/%x/%y.png?apikey=%1").arg(apiKey, mapType);
     qDebug() << "UrlTemplate" << json["UrlTemplate"];
     json["ImageFormat"] = "png";
     json["QImageFormat"] = "Indexed8";
@@ -51,14 +53,21 @@ int main(int argc, char *argv[])
 
     QHttpServer httpServer;
     httpServer.route("/", []() {
-        return "Hello World!";
+        qDebug() << "Request for /";
+        return "";
+    });
+    httpServer.setMissingHandler(&httpServer, [](const QHttpServerRequest &request, QHttpServerResponder &responder) {
+        qDebug() << "Missing" << request.url();
+        responder.write(QHttpServerResponder::StatusCode::NotFound);
     });
 
-    for (auto mapType : { "cycle", "transport", "landscape", "outdoors", "transport-dark", "spinal-map", "pioneer", "mobile-atlas", "neighbourhood", "atlas" })
+
+    AppConfig *appConfig = AppConfig::instance();
+    for (auto &mapType : s_osmToThunderforestMapNames)
     {
-        httpServer.route(QString("/%1").arg(mapType), [mapType]() {
-            qDebug().nospace().noquote() << "Request for /" << mapType;
-            return createOsmJson(AppConfig::instance()->thunderforestApiKey(), mapType);
+        httpServer.route(QString("/%1").arg(mapType.first), [mapType, appConfig]() {
+            qDebug().nospace().noquote() << "Request for /" << mapType.first;
+            return createOsmJson(appConfig->thunderforestApiKey(), mapType.second);
         });
     }
     auto tcpServer = new QTcpServer();
