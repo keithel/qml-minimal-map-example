@@ -1,17 +1,21 @@
-# minimal-map Example for Qt 6.5+ and Qt 5.15
+# minimal-map-thunderforest Example for Qt 6.5+
 
-This provides the Qt minimal-map example unified for both Qt 5.15 and Qt 6,
-built using CMake, even for Qt 5.
+This provides a minimal map example with external map tile source provider
+Thunderforest. It is based on the Qt minimal-map example shipped with Qt.
 
-It provides some best practices for writing CMake projects that are compatible
-with both Qt 5 and Qt 6.
+## Prerequisites
 
-## Qt 6
+ * A compiler supported by Qt
+ * CMake version 3.16+
+ * A Qt 6.5+ installation (for best results, get from qt.io) with the following
+   modules installed:
+    * Qt HTTP Server
+    * Qt Location
+    * Qt Multimedia
+    * Qt Positioning
+ * A [Thunderforest account](https://www.thunderforest.com/pricing/) ([basic free tier](https://manage.thunderforest.com/users/sign_up?price=hobby-project-usd) is fine)
+   * The API Key from the [dashboard](https://manage.thunderforest.com/dashboard) of your Thunderforest account
 
-For Qt 6, this builds a QML module, which is loaded into the QML engine using
-`engine.loadFromModule`.
+## Running the example
 
-## Qt 5
-
-For Qt 5, this packages the QML in a Qt Resource file, packaged with the
-application. It loads the QML using the Qt resource system.
+After building, run the example with the command line argument `-k <API key>`, substituting your API key in place of `<API key>`.
