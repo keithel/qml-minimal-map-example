@@ -1,7 +1,10 @@
-# minimal-map-thunderforest Example for Qt 6.5+
+# minimal-map-thunderforest Example for Qt 6.5+ with image overlay
 
 This provides a minimal map example with external map tile source provider
 Thunderforest. It is based on the Qt minimal-map example shipped with Qt.
+
+It also illustrates how to overlay an image at a particular set of
+coordinates and zoom level using a MapQuickItem
 
 ## Prerequisites
 

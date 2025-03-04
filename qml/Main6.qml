@@ -27,15 +27,6 @@ ApplicationWindow {
         }
     }
 
-    // Define GeoShape's ShapeType enum type in qml
-    enum ShapeType {
-        UnknownType = 0,
-        RectangleType,
-        CircleType,
-        PathType,
-        PolygonType
-    }
-
     Map {
         id: mapBase
         z: 5
@@ -43,14 +34,22 @@ ApplicationWindow {
         plugin: mapPlugin
         center: QtPositioning.coordinate(43,-71.45) // Manchester, NH
         zoomLevel: 14
-        property geoCoordinate startCentroid
         activeMapType: supportedMapTypes[mapChoice.currentIndex]
+        property geoCoordinate startCentroid
         property geoCoordinate topLeftCoordinate;
+        property geoCoordinate cursorCoordinate;
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onPositionChanged: (mouse) => {
+                mapBase.cursorCoordinate = mapBase.toCoordinate(Qt.point(mouseX, mouseY), false);
+            }
+        }
 
         Component.onCompleted: {
-            var mapTypeNames = mapBase.supportedMapTypes.map((mapType) => mapType.name);
             mapChoice.model = mapBase.supportedMapTypes.map((mapType) => mapType.name);
-            mapChoice.currentIndex = 5;
+            mapChoice.currentIndex = 0;
         }
 
         onVisibleRegionChanged: {
@@ -119,37 +118,15 @@ ApplicationWindow {
         fieldOfView: mapBase.fieldOfView
         z: mapBase.z + 1
 
-        function printCenter() {
-            console.log(visibleArea.width + ", " + visibleArea.height);
-            console.log(width + ", " + height);
-            var pixel = Qt.point(width/2, height/2);//Qt.point(0, 0);
-            var pixelCoord = toCoordinate(pixel, true);
-            console.log("center " + center.latitude + ", " + center.longitude + ", calcCenter == " + pixelCoord.latitude + ", " + pixelCoord.longitude);
-        }
-
-        Component.onCompleted: printCenter();
-        onCenterChanged: {
-            if(height > 0 && width > 0)
-                printCenter();
-            // Just assume visibleRegion is a GeoShape.RectangleType, as the
-            // `GeoShape` namespace seems not to be defined in Qt 6.9.
-            // console.log("Center changed, visibleRegion.type: " + visibleRegion.type)
-            // if (visibleRegion.type === Main6.ShapeType.RectangleType) {
-            //     console.log("visibleRegion is a georectangle")
-            //     var vRegionRect = MapUtils.geoShapeToRectangle(visibleRegion); // geoRectangle(visibleRegion);
-            //     console.log("vRegionRect bottomLeft: " + vRegionRect.bottomLeft);
-            // }
-        }
-
         SequentialAnimation {
             id: seqAnim
             loops: Animation.Infinite
             running: true
-            property QtObject target: circle
-            property string property: "radius"
-            property int lowVal: 10000
-            property int highVal: 200000
-            property int duration: 2000
+            property QtObject target: tiffImgMQI
+            property string property: "opacity"
+            property real lowVal: 0
+            property real highVal: 1
+            property int duration: 750
 
             NumberAnimation {
                 target: seqAnim.target
@@ -175,21 +152,9 @@ ApplicationWindow {
                 id: tiffImg
                 source: "qrc:/manchester-elm-valley-mammoth-map.tif"
             }
-            coordinate: QtPositioning.coordinate(42.99486, -71.46345)
+            coordinate: QtPositioning.coordinate(42.99486, -71.463457)
             anchorPoint: Qt.point(0,0); // Qt.point(tiffImg.width/2, tiffImg.height/2)
             zoomLevel: 17;
-        }
-
-        MapCircle {
-            id: circle
-            center: QtPositioning.coordinate(43,-71.45)
-            radius: 200000
-            border.width: 5
-
-            // MouseArea {
-            //     anchors.fill: parent
-            //     drag.target: parent
-            // }
         }
 
         // // The code below enables SSAA
@@ -211,25 +176,15 @@ ApplicationWindow {
             id: mapChoice
         }
 
+        FontMetrics { id: fm; font: mouseCoords.font }
         TextField {
             id: mouseCoordsDec
             Layout.preferredWidth: fm.boundingRect("-00.00000, -00.00000").width + leftPadding + rightPadding;
-            property string tlCoordinateDecimal: mapBase.topLeftCoordinate.latitude.toFixed(5) + ", " + mapBase.topLeftCoordinate.longitude.toFixed(5);
+            property string tlCoordinateDecimal: mapBase.cursorCoordinate.latitude.toFixed(5) + ", " + mapBase.cursorCoordinate.longitude.toFixed(5);
             readOnly: true
             color: Qt.black
             text: tlCoordinateDecimal
-
-            background: Rectangle {
-                implicitWidth: 200
-                implicitHeight: 40
-                color: "transparent"
-                // border.color: "black"
-            }
-
-            FontMetrics {
-                id: fm2
-                font: mouseCoordsDec.font
-            }
+            background: Item { implicitWidth: 200; implicitHeight: 40 }
         }
 
         TextField {
@@ -237,19 +192,8 @@ ApplicationWindow {
             Layout.preferredWidth: fm.boundingRect("00° 00' 00.0\" N, 00° 00' 00.0\" W, 0m").width + leftPadding + rightPadding;
             readOnly: true
             color: Qt.black
-            text: mapBase.topLeftCoordinate.toString();
-
-            background: Rectangle {
-                implicitWidth: 200
-                implicitHeight: 40
-                color: "transparent"
-                // border.color: "black"
-            }
-
-            FontMetrics {
-                id: fm
-                font: mouseCoords.font
-            }
+            text: mapBase.cursorCoordinate.toString();
+            background: Item { implicitWidth: 200; implicitHeight: 40; }
         }
     }
 }
