@@ -3,7 +3,12 @@
 cmake_minimum_required(VERSION 3.16)
 project(minimal_map VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(PROJECT_BINARY_NAME "app${CMAKE_PROJECT_NAME}")
+
+# set(QML_IMPORT_PATH ${CMAKE_BINARY_DIR}/qml CACHE STRING "" FORCE)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -16,29 +21,32 @@ endif()
 set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/location/${PROJECT_NAME}")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui QuickControls2 Location Qml)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui QuickControls2 Location Qml HttpServer)
 
 set(PROJECT_SOURCES
     main.cpp
 )
 
-set(qml_module_uri com.example.${PROJECT_NAME})
+set(qml_module_uri ${PROJECT_NAME})
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_policy(SET QTP0001 NEW)
     qt_policy(SET QTP0004 NEW)
 
-    qt_add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
+    qt_add_executable(${PROJECT_BINARY_NAME} WIN32 MACOSX_BUNDLE
         ${PROJECT_SOURCES}
     )
 
-    qt_add_qml_module(${PROJECT_NAME}
+    qt_add_qml_module(${PROJECT_BINARY_NAME}
         URI ${qml_module_uri}
         VERSION 1.0
         QML_FILES
             "qml/Main6.qml"
         #RESOURCES
             # List relative path to resources here
+        SOURCES
+            appconfig.h
+            appconfig.cpp
     )
 
     # This is so that in C++, you can provide path to resources without hardcoding the resource
@@ -46,22 +54,23 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     # can get the module URI, then do the .->/ replacement in C++, so I guess this is the lazy
     # approach.
     string(REPLACE "." "/" qml_module_resource_path "${qml_module_uri}/")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
+    target_compile_definitions(${PROJECT_BINARY_NAME} PRIVATE
         RESOURCE_PREFIX="${qml_module_resource_path}"
     )
 else()
     list(APPEND PROJECT_SOURCES "qml.qrc")
-    add_executable(${PROJECT_NAME}
+    add_executable(${PROJECT_BINARY_NAME}
         ${PROJECT_SOURCES}
     )
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(${PROJECT_BINARY_NAME} PUBLIC
     Qt::Core
     Qt::Gui
     Qt::QuickControls2
     Qt::Location
     Qt::Qml
+    Qt::HttpServer
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -71,7 +80,7 @@ if(${QT_VERSION} VERSION_LESS 6.1.0)
   set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER ${qml_module_uri})
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(${PROJECT_BINARY_NAME} PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -79,7 +88,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_BINARY_NAME}
     RUNTIME DESTINATION "${INSTALL_EXAMPLEDIR}"
     BUNDLE DESTINATION "${INSTALL_EXAMPLEDIR}"
     LIBRARY DESTINATION "${INSTALL_EXAMPLEDIR}"
