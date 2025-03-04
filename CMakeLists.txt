@@ -49,6 +49,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
             appconfig.cpp
     )
 
+    qt_add_resources(${PROJECT_BINARY_NAME} "resources"
+        PREFIX "/"
+        FILES
+        manchester-elm-valley-mammoth-map.tif
+    )
+
     # This is so that in C++, you can provide path to resources without hardcoding the resource
     # prefix. It's possible this may be able to be created just from within C++ - as you probably
     # can get the module URI, then do the .->/ replacement in C++, so I guess this is the lazy
