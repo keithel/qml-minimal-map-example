@@ -15,7 +15,7 @@ std::map<QString, QString> s_osmToThunderforestMapNames = { {"street", "atlas"},
 QJsonObject createOsmJson(const QString &apiKey, const QString &mapType) {
     QJsonObject json;
     json["UrlTemplate"] = QString("https://tile.thunderforest.com/%2/%z/%x/%y.png?apikey=%1").arg(apiKey, mapType);
-    qDebug() << "UrlTemplate" << json["UrlTemplate"];
+    // qDebug() << "UrlTemplate" << json["UrlTemplate"];
     json["ImageFormat"] = "png";
     json["QImageFormat"] = "Indexed8";
     json["ID"] = QString("thf-%1").arg(mapType);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     for (auto &mapType : s_osmToThunderforestMapNames)
     {
         httpServer.route(QString("/%1").arg(mapType.first), [mapType, appConfig]() {
-            qDebug().nospace().noquote() << "Request for /" << mapType.first;
+            qDebug().nospace().noquote() << "Request for /" << mapType.first << " mapping to thunderforest tileset " << mapType.second;
             return createOsmJson(appConfig->thunderforestApiKey(), mapType.second);
         });
     }
