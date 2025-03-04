@@ -12,7 +12,7 @@ class AppConfig : public QObject
     Q_PROPERTY(QString thunderforestApiKey READ thunderforestApiKey WRITE setThunderforestApiKey NOTIFY thunderforestApiKeyChanged)
 
 public:
-    explicit AppConfig(QObject *parent = nullptr);
+    explicit AppConfig(QObject *parent);
     ~AppConfig() = default;
 
     static AppConfig *instance();
