@@ -71,10 +71,12 @@ int main(int argc, char *argv[])
         });
     }
     auto tcpServer = new QTcpServer();
-    if(!tcpServer->listen(QHostAddress::Any, 8080) || !httpServer.bind(tcpServer)) {
+    quint16 listenPort = 8080;
+    if(!tcpServer->listen(QHostAddress::Any, listenPort) || !httpServer.bind(tcpServer)) {
         delete tcpServer;
         return -1;
     }
+    appConfig->setOsmMappingProvidersRepositoryAddress(QString("http://localhost:%1/").arg(listenPort));
 
     QObject::connect(
         &engine,

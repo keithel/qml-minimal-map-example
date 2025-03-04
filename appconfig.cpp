@@ -67,3 +67,15 @@ void AppConfig::setThunderforestApiKey(const QString &key)
     }
 }
 
+QString AppConfig::osmMappingProvidersRepositoryAddress() const
+{
+    return m_osmMappingProvidersRepositoryAddress;
+}
+
+void AppConfig::setOsmMappingProvidersRepositoryAddress(const QString &osmMappingProvidersRepositoryAddress)
+{
+    if (m_osmMappingProvidersRepositoryAddress != osmMappingProvidersRepositoryAddress) {
+        m_osmMappingProvidersRepositoryAddress = osmMappingProvidersRepositoryAddress;
+        emit osmMappingProvidersRepositoryAddressChanged();
+    }
+}
