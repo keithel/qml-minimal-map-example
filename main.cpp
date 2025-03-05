@@ -15,7 +15,6 @@ std::map<QString, QString> s_osmToThunderforestMapNames = { {"street", "atlas"},
 QJsonObject createOsmJson(const QString &apiKey, const QString &mapType) {
     QJsonObject json;
     json["UrlTemplate"] = QString("https://tile.thunderforest.com/%2/%z/%x/%y.png?apikey=%1").arg(apiKey, mapType);
-    // qDebug() << "UrlTemplate" << json["UrlTemplate"];
     json["ImageFormat"] = "png";
     json["QImageFormat"] = "Indexed8";
     json["ID"] = QString("thf-%1").arg(mapType);
@@ -27,29 +26,8 @@ QJsonObject createOsmJson(const QString &apiKey, const QString &mapType) {
 
 int main(int argc, char *argv[])
 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
     QGuiApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
-
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    const QUrl url(QStringLiteral(
-        "qrc:/qml/main5.qml"
-        ));
-    QObject::connect(
-        &engine,
-        &QQmlApplicationEngine::objectCreated,
-        &app,
-        [url](QObject* obj, const QUrl& objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        },
-        Qt::QueuedConnection);
-    engine.load(url);
-#else
 
     QHttpServer httpServer;
     httpServer.route("/", []() {
@@ -84,8 +62,7 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("minimal_map", "Main6");
-#endif
+    engine.loadFromModule("minimal_map", "Main");
 
     return app.exec();
 }

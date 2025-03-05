@@ -8,8 +8,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(PROJECT_BINARY_NAME "app${CMAKE_PROJECT_NAME}")
 
-# set(QML_IMPORT_PATH ${CMAKE_BINARY_DIR}/qml CACHE STRING "" FORCE)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -20,7 +18,7 @@ endif()
 
 set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/location/${PROJECT_NAME}")
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui QuickControls2 Location Qml HttpServer)
 
 set(PROJECT_SOURCES
@@ -29,46 +27,39 @@ set(PROJECT_SOURCES
 
 set(qml_module_uri ${PROJECT_NAME})
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_policy(SET QTP0001 NEW)
-    qt_policy(SET QTP0004 NEW)
+qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 NEW)
 
-    qt_add_executable(${PROJECT_BINARY_NAME} WIN32 MACOSX_BUNDLE
-        ${PROJECT_SOURCES}
-    )
+qt_add_executable(${PROJECT_BINARY_NAME} WIN32 MACOSX_BUNDLE
+    ${PROJECT_SOURCES}
+)
 
-    qt_add_qml_module(${PROJECT_BINARY_NAME}
-        URI ${qml_module_uri}
-        VERSION 1.0
-        QML_FILES
-            "qml/Main6.qml"
-        #RESOURCES
-            # List relative path to resources here
-        SOURCES
-            appconfig.h
-            appconfig.cpp
-    )
+qt_add_qml_module(${PROJECT_BINARY_NAME}
+    URI ${qml_module_uri}
+    VERSION 1.0
+    QML_FILES
+        "qml/Main.qml"
+    #RESOURCES
+        # List relative path to resources here
+    SOURCES
+        appconfig.h
+        appconfig.cpp
+)
 
-    qt_add_resources(${PROJECT_BINARY_NAME} "resources"
-        PREFIX "/"
-        FILES
-        manchester-elm-valley-mammoth-map.tif
-    )
+qt_add_resources(${PROJECT_BINARY_NAME} "resources"
+    PREFIX "/"
+    FILES
+    manchester-elm-valley-mammoth-map.tif
+)
 
-    # This is so that in C++, you can provide path to resources without hardcoding the resource
-    # prefix. It's possible this may be able to be created just from within C++ - as you probably
-    # can get the module URI, then do the .->/ replacement in C++, so I guess this is the lazy
-    # approach.
-    string(REPLACE "." "/" qml_module_resource_path "${qml_module_uri}/")
-    target_compile_definitions(${PROJECT_BINARY_NAME} PRIVATE
-        RESOURCE_PREFIX="${qml_module_resource_path}"
-    )
-else()
-    list(APPEND PROJECT_SOURCES "qml.qrc")
-    add_executable(${PROJECT_BINARY_NAME}
-        ${PROJECT_SOURCES}
-    )
-endif()
+# This is so that in C++, you can provide path to resources without hardcoding the resource
+# prefix. It's possible this may be able to be created just from within C++ - as you probably
+# can get the module URI, then do the .->/ replacement in C++, so I guess this is the lazy
+# approach.
+string(REPLACE "." "/" qml_module_resource_path "${qml_module_uri}/")
+target_compile_definitions(${PROJECT_BINARY_NAME} PRIVATE
+    RESOURCE_PREFIX="${qml_module_resource_path}"
+)
 
 target_link_libraries(${PROJECT_BINARY_NAME} PUBLIC
     Qt::Core
