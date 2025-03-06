@@ -16,8 +16,6 @@ ApplicationWindow {
     title: mapBase.center + " zoom " + mapBase.zoomLevel.toFixed(3)
           + " min " + mapBase.minimumZoomLevel + " max " + mapBase.maximumZoomLevel
 
-    property var currentMap: null
-
     Plugin {
         id: mapPlugin
         name: "osm"
@@ -36,7 +34,6 @@ ApplicationWindow {
         zoomLevel: 14
         activeMapType: supportedMapTypes[mapChoice.currentIndex]
         property geoCoordinate startCentroid
-        property geoCoordinate topLeftCoordinate;
         property geoCoordinate cursorCoordinate;
 
         MouseArea {
@@ -50,10 +47,6 @@ ApplicationWindow {
         Component.onCompleted: {
             mapChoice.model = mapBase.supportedMapTypes.map((mapType) => mapType.name);
             mapChoice.currentIndex = 0;
-        }
-
-        onVisibleRegionChanged: {
-            topLeftCoordinate = toCoordinate(Qt.point(0,0), false);
         }
 
         PinchHandler {
@@ -153,7 +146,7 @@ ApplicationWindow {
                 source: "qrc:/manchester-elm-valley-mammoth-map.tif"
             }
             coordinate: QtPositioning.coordinate(42.99486, -71.463457)
-            anchorPoint: Qt.point(0,0); // Qt.point(tiffImg.width/2, tiffImg.height/2)
+            anchorPoint: Qt.point(0,0);
             zoomLevel: 17;
         }
 
