@@ -95,7 +95,7 @@ ApplicationWindow {
 
     Map {
         id: mapOverlay
-        anchors.fill: parent
+        anchors.fill: mapBase
         plugin: Plugin { name: "itemsoverlay" }
         center: mapBase.center
         color: 'transparent' // Necessary to make this map transparent
