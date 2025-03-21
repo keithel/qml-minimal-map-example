@@ -1,7 +1,7 @@
 # Generated from minimal_map.pro.
 
 cmake_minimum_required(VERSION 3.16)
-project(minimal_map LANGUAGES CXX)
+project(qtbug_134438 VERSION 0.3 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -34,6 +34,7 @@ target_link_libraries(minimal_map PUBLIC
 # Resources:
 set(qml_resource_files
     "main.qml"
+    mapoverlay.png
 )
 
 qt6_add_resources(minimal_map "qml"
